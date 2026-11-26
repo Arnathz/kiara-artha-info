@@ -87,7 +87,7 @@ window.KAP_DATA = {
       name: "Kawasan Kampung Korea (Jl. Banten No. 7)",
       category: "Kuliner",
       zoneLabel: "Koridor Barat Jl. Banten · Area Parkir",
-      accessBadge: "Gratis",
+      accessBadge: "Tutup",
       lat: -6.915679,
       lng: 107.640619,
       description: "Titik eks Kampung Korea Bandung di koridor Jl. Banten No. 7 sisi barat area parkir (di Google Maps tercatat tutup permanen; bersebelahan dengan Nats Time)."
@@ -247,7 +247,7 @@ window.KAP_DATA = {
       name: "Area Lollipop's Playland (Sisi Timur Danau)",
       category: "Wahana & Olahraga",
       zoneLabel: "Sisi Timur Danau",
-      accessBadge: "Berbayar",
+      accessBadge: "Tutup",
       lat: -6.916499,
       lng: 107.642860,
       description: "Lokasi bekas indoor playground Lollipop's Playland di sisi timur danau (di Google Maps tercatat tutup permanen)."
@@ -446,7 +446,7 @@ window.KAP_DATA = {
       price: "Tutup Permanen",
       duration: "Tidak beroperasi",
       note: "Lokasi eks Lollipop's di sisi timur danau tercatat tutup permanen di Google Maps.",
-      badge: "Berbayar",
+      badge: "Tutup",
       destinationId: "lollipops-playland"
     }
   ],
@@ -463,7 +463,7 @@ window.KAP_DATA = {
         { name: "Gubug Makan Mang Engking", type: "Resto Keluarga Sunda", detail: "Sisi barat laut utara parkir; saung di atas kolam, udang bakar madu, gurame", price: "Rp45.000 – Rp150.000", destinationId: "mang-engking" },
         { name: "Tedja Coffee Kiara Artha x Invalogi", type: "Kafe Tematik", detail: "Jl. Banten No. 10A tepat di selatan gerbang barat; konsep Japan Retro Futurism", price: "Rp25.000 – Rp55.000", destinationId: "invalogi-coffee" },
         { name: "Nats Time Coffee & Resto", type: "Kafe & Resto", detail: "Jl. Banten No. 7; menu kopi dan hidangan santai", price: "Rp28.000 – Rp85.000", destinationId: "nats-time" },
-        { name: "Kawasan Kampung Korea (Jl. Banten No. 7)", type: "Area Tematik (Tutup Permanen)", detail: "Titik eks sentra street food Korea di Jl. Banten No. 7; tercatat tutup permanen di Google Maps", price: "—", destinationId: "kampung-korea" }
+        { name: "Kawasan Kampung Korea (Jl. Banten No. 7)", type: "Area Tematik", detail: "Titik eks sentra street food Korea di Jl. Banten No. 7; tercatat tutup permanen di Google Maps", price: "—", destinationId: "kampung-korea", accessOverride: "Tutup" }
       ]
     },
     {
@@ -548,6 +548,7 @@ window.KAP_DATA = {
     {
       date: "November 2026",
       tag: "Event Akhir Pekan",
+      tone: "event",
       title: "Program Hiburan \"Sarerea Seru Ngariung\"",
       summary: "Panggung hiburan akhir pekan gratis (cukup tiket masuk taman) menghadirkan Zumba komunitas, live music, K-Pop in Public bersama XP Team, serta Live DJ & Karaoke (edisi terbaru 21–22 Nov 2026).",
       source: "Instagram @kiaraarthapark"
@@ -555,6 +556,7 @@ window.KAP_DATA = {
     {
       date: "Menjelang Desember 2026",
       tag: "Agenda Libur Akhir Tahun",
+      tone: "event",
       title: "Persiapan Bazar Kuliner & Event Nataru",
       summary: "Secara rutin menjelang libur Natal & Tahun Baru, Kiara Artha Park merilis agenda bazar UMKM, festival tematik, dan jadwal hiburan tambahan melalui Instagram Story @kiaraarthapark.",
       source: "linktr.ee/kiaraarthapark"
@@ -562,20 +564,23 @@ window.KAP_DATA = {
     {
       date: "Terbaru 2025–2026",
       tag: "Fasilitas & Tenant Aktif",
+      tone: "positive",
       title: "Lapangan Padel Co., Kafe 24 Jam & Ruko Timur",
       summary: "Tersedia 4 lapangan Padel Co. Semi Outdoor di sisi utara (06.00–01.00 WIB), Monday Co & McDonald's 24 jam di sisi selatan, serta tenant baru di Ruko Blok B Timur.",
       source: "Update Kawasan & Google Maps"
     },
     {
       date: "Info Status Wahana",
-      tag: "Pembaruan Lokasi",
+      tag: "Penting · Perubahan Lokasi",
+      tone: "important",
       title: "Status Papa Dino, Lollipop's & Kampung Korea",
       summary: "Papa Dino sudah pindah ke Puncak, Bogor (sejak akhir Des 2024). Pada Google Maps, POI Kampung Korea (Jl. Banten No. 7) dan Lollipop's Playland saat ini tercatat tutup permanen.",
       source: "Verifikasi Google Maps"
     },
     {
       date: "Info Festival Tahunan",
-      tag: "Sorotan Festival",
+      tag: "Arsip Festival",
+      tone: "archive",
       title: "Tuan Rumah Festival Besar Kota Bandung",
       summary: "Menjadi lokasi acara berskala besar sepanjang tahun seperti Come See Mie Fest 2026 (Juli), Maxim Zumba Akbar 2026 (Mei), West Java Festival, dan Bandung Fair.",
       source: "Arsip Event Resmi"
