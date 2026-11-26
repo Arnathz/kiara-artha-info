@@ -7,6 +7,7 @@
   const state = {
     originId: "gps",
     destinationId: DATA.destinations[0].id,
+    customPin: null,
     mapType: "m",
     modalCategory: "Semua",
     modalSearch: "",
@@ -84,8 +85,7 @@
   }
 
   function buildEmbedUrl(dest, mapType) {
-    const q = dest.embedQuery || `${dest.lat},${dest.lng}`;
-    return `https://maps.google.com/maps?q=${encodeURIComponent(q)}&t=${encodeURIComponent(mapType)}&z=18&hl=id&output=embed`;
+    return `https://maps.google.com/maps?q=${dest.lat},${dest.lng}&t=${encodeURIComponent(mapType)}&z=19&hl=id&output=embed`;
   }
 
   function getWibNow() {
@@ -148,29 +148,40 @@
   function renderQuickPins() {
     const featuredIds = [
       "danau-air-mancur",
+      "taman-asia-afrika",
       "kampung-korea",
       "aiueo-space",
       "mang-engking",
-      "lollipops-playland",
+      "monday-co",
+      "mcdonalds",
       "padel-co",
-      "masjid-toilet",
+      "papa-skuter",
+      "mushalla",
       "parkir-utama"
     ];
     els.quickPins.innerHTML = featuredIds
       .map((id) => {
         const dest = getDestinationById(id);
-        const activeClass = dest.id === state.destinationId ? " is-active" : "";
-        const shortLabel = dest.name.split(" (")[0].replace("Area ", "");
+        const activeClass = !state.customPin && dest.id === state.destinationId ? " is-active" : "";
+        const shortLabel = dest.name
+          .split(" (")[0]
+          .split(" - ")[0]
+          .replace("Kiara Artha Park", "")
+          .replace("Kiara Artha", "")
+          .replace("Kawasan ", "")
+          .trim();
         return `<button type="button" class="quick-pin-btn${activeClass}" data-pin-id="${dest.id}">${shortLabel}</button>`;
       })
       .join("");
   }
 
   function renderMapPreview() {
-    const dest = getDestinationById(state.destinationId);
+    const baseDest = getDestinationById(state.destinationId);
+    const dest = state.customPin ? { ...baseDest, ...state.customPin } : baseDest;
+
     els.selectedDestBadge.textContent = dest.accessBadge;
     els.selectedDestBadge.className = `badge ${getBadgeClass(dest.accessBadge)}`;
-    els.selectedDestZone.textContent = dest.zoneLabel;
+    els.selectedDestZone.textContent = `${dest.zoneLabel} · ${dest.lat.toFixed(6)}, ${dest.lng.toFixed(6)}`;
     els.selectedDestName.textContent = dest.name;
     els.selectedDestDesc.textContent = dest.description;
 
@@ -183,8 +194,9 @@
     renderQuickPins();
   }
 
-  function selectDestination(destId, shouldScrollToMap) {
+  function selectDestination(destId, shouldScrollToMap, customPin) {
     state.destinationId = destId;
+    state.customPin = customPin || null;
     renderMapPreview();
     renderModalDestList();
     if (shouldScrollToMap) {
@@ -311,6 +323,10 @@
                   const accessTag = t.accessOverride
                     ? ` <span class="badge ${getBadgeClass(t.accessOverride)}">${t.accessOverride}</span>`
                     : "";
+                  const hasCustomCoords = typeof t.lat === "number" && typeof t.lng === "number";
+                  const extraAttrs = hasCustomCoords
+                    ? ` data-focus-lat="${t.lat}" data-focus-lng="${t.lng}" data-focus-name="${t.name.replace(/"/g, "&quot;")}" data-focus-desc="${t.detail.replace(/"/g, "&quot;")}"${t.accessOverride ? ` data-focus-access="${t.accessOverride}"` : ""}`
+                    : "";
                   return `
                     <div class="tenant-row">
                       <div class="item-card-body">
@@ -318,7 +334,7 @@
                         <p class="tenant-detail">${t.detail}</p>
                         <p class="tenant-price">Kisaran: ${t.price}</p>
                       </div>
-                      <button type="button" class="btn btn-outline btn-xs" data-focus-dest="${destId}">Peta</button>
+                      <button type="button" class="btn btn-outline btn-xs" data-focus-dest="${destId}"${extraAttrs}>Peta</button>
                     </div>
                   `;
                 })
@@ -506,7 +522,21 @@
     document.body.addEventListener("click", (e) => {
       const focusBtn = e.target.closest("[data-focus-dest]");
       if (focusBtn) {
-        selectDestination(focusBtn.getAttribute("data-focus-dest"), true);
+        const destId = focusBtn.getAttribute("data-focus-dest");
+        const latAttr = focusBtn.getAttribute("data-focus-lat");
+        const lngAttr = focusBtn.getAttribute("data-focus-lng");
+        let customPin = null;
+        if (latAttr && lngAttr) {
+          customPin = {
+            lat: parseFloat(latAttr),
+            lng: parseFloat(lngAttr),
+            name: focusBtn.getAttribute("data-focus-name") || undefined,
+            description: focusBtn.getAttribute("data-focus-desc") || undefined
+          };
+          const accessAttr = focusBtn.getAttribute("data-focus-access");
+          if (accessAttr) customPin.accessBadge = accessAttr;
+        }
+        selectDestination(destId, true, customPin);
       }
     });
 
