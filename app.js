@@ -17,7 +17,9 @@
   };
 
   const els = {
+    introBar: document.getElementById("intro-bar"),
     parkLiveStatus: document.getElementById("park-live-status"),
+    mapMetaBox: document.getElementById("map-meta-box"),
     selectedDestBadge: document.getElementById("selected-dest-badge"),
     selectedDestZone: document.getElementById("selected-dest-zone"),
     selectedDestName: document.getElementById("selected-dest-name"),
@@ -60,7 +62,16 @@
     if (accessBadge === "Gratis") return "badge-free";
     if (accessBadge === "Tiket Taman") return "badge-ticket";
     if (accessBadge === "Berbayar") return "badge-paid";
+    if (accessBadge === "Tutup") return "badge-danger";
     return "badge-neutral";
+  }
+
+  function getToneClass(accessBadge) {
+    if (accessBadge === "Gratis") return "tone-free";
+    if (accessBadge === "Tiket Taman") return "tone-ticket";
+    if (accessBadge === "Berbayar") return "tone-paid";
+    if (accessBadge === "Tutup") return "tone-danger";
+    return "tone-ticket";
   }
 
   function getOriginById(id) {
@@ -122,6 +133,9 @@
       ? `Taman Sedang Buka (${hh}.${mm} WIB)`
       : `Taman Tutup (${hh}.${mm} WIB · Buka 09.00 WIB)`;
     els.parkLiveStatus.classList.toggle("is-closed", !isOpen);
+    if (els.introBar) {
+      els.introBar.classList.toggle("is-closed-bar", !isOpen);
+    }
   }
 
   function populateOriginSelects() {
@@ -146,31 +160,24 @@
   }
 
   function renderQuickPins() {
-    const featuredIds = [
-      "danau-air-mancur",
-      "taman-asia-afrika",
-      "kampung-korea",
-      "aiueo-space",
-      "mang-engking",
-      "monday-co",
-      "mcdonalds",
-      "padel-co",
-      "papa-skuter",
-      "mushalla",
-      "parkir-utama"
+    const featuredPins = [
+      { id: "danau-air-mancur", label: "Dancing Fountain" },
+      { id: "taman-asia-afrika", label: "Taman Asia Afrika" },
+      { id: "kampung-korea", label: "Kampung Korea" },
+      { id: "aiueo-space", label: "AIUEO Space" },
+      { id: "mang-engking", label: "Mang Engking" },
+      { id: "monday-co", label: "Monday Co" },
+      { id: "mcdonalds", label: "McDonald's" },
+      { id: "padel-co", label: "Padel Co." },
+      { id: "papa-skuter", label: "Papa Skuter" },
+      { id: "mushalla", label: "Mushalla" },
+      { id: "parkir-utama", label: "Parkir Utama" }
     ];
-    els.quickPins.innerHTML = featuredIds
-      .map((id) => {
-        const dest = getDestinationById(id);
+    els.quickPins.innerHTML = featuredPins
+      .map((pin) => {
+        const dest = getDestinationById(pin.id);
         const activeClass = !state.customPin && dest.id === state.destinationId ? " is-active" : "";
-        const shortLabel = dest.name
-          .split(" (")[0]
-          .split(" - ")[0]
-          .replace("Kiara Artha Park", "")
-          .replace("Kiara Artha", "")
-          .replace("Kawasan ", "")
-          .trim();
-        return `<button type="button" class="quick-pin-btn${activeClass}" data-pin-id="${dest.id}">${shortLabel}</button>`;
+        return `<button type="button" class="quick-pin-btn${activeClass}" data-pin-id="${dest.id}">${pin.label}</button>`;
       })
       .join("");
   }
@@ -179,6 +186,9 @@
     const baseDest = getDestinationById(state.destinationId);
     const dest = state.customPin ? { ...baseDest, ...state.customPin } : baseDest;
 
+    if (els.mapMetaBox) {
+      els.mapMetaBox.className = `map-meta ${getToneClass(dest.accessBadge)}`;
+    }
     els.selectedDestBadge.textContent = dest.accessBadge;
     els.selectedDestBadge.className = `badge ${getBadgeClass(dest.accessBadge)}`;
     els.selectedDestZone.textContent = `${dest.zoneLabel} · ${dest.lat.toFixed(6)}, ${dest.lng.toFixed(6)}`;
@@ -231,13 +241,31 @@
           ? "Menampilkan jadwal Sabtu–Minggu & Libur Nasional."
           : "Menampilkan jadwal Senin–Jumat (Weekday).";
     }
+    els.nextFountainInfo.classList.toggle("is-info", !isViewingTodaySchedule);
 
     els.fountainList.innerHTML = list
       .map((item) => {
+        const [h, m] = item.time.split(":").map(Number);
+        const itemMinutes = h * 60 + m;
         const isNext = isViewingTodaySchedule && nextTime && nextTime.time === item.time;
+        const isPast = isViewingTodaySchedule && itemMinutes < wib.totalMinutes;
+        const classes = ["fountain-item"];
+        if (item.isNight) classes.push("is-night");
+        if (isPast) classes.push("is-past");
+        if (isNext) classes.push("is-next");
+
+        const tagHtml = isNext
+          ? '<span class="fountain-tag fountain-tag-next">Berikutnya</span>'
+          : item.isNight
+          ? '<span class="fountain-tag fountain-tag-night">Lampu Malam</span>'
+          : "";
+
         return `
-          <li class="fountain-item${isNext ? " is-next" : ""}">
-            <span class="fountain-time">${item.label}${isNext ? " · Berikutnya" : ""}</span>
+          <li class="${classes.join(" ")}">
+            <div class="fountain-top">
+              <span class="fountain-time">${item.label}</span>
+              ${tagHtml}
+            </div>
             <span class="fountain-note">${item.note}</span>
           </li>
         `;
@@ -248,18 +276,28 @@
   }
 
   function renderAreasComparison() {
+    const toneMap = {
+      gratis: "tone-free",
+      "tiket-taman": "tone-ticket",
+      "berbayar-khusus": "tone-paid"
+    };
+
     els.areaComparisonList.innerHTML = DATA.areasComparison
       .map(
         (group) => `
-        <article class="card">
-          <div class="area-card-head">
-            <h3 class="area-card-title">${group.title}</h3>
-            <span class="badge ${group.badgeClass}">${group.badge}</span>
+        <article class="card area-card ${toneMap[group.id] || ""}">
+          <div class="area-card-banner">
+            <div class="area-card-head">
+              <h3 class="area-card-title">${group.title}</h3>
+              <span class="badge ${group.badgeClass}">${group.badge}</span>
+            </div>
+            <p class="area-card-sub">${group.subtitle}</p>
           </div>
-          <p class="area-card-sub">${group.subtitle}</p>
-          <ul class="bullet-list">
-            ${group.items.map((text) => `<li>${text}</li>`).join("")}
-          </ul>
+          <div class="area-card-body">
+            <ul class="bullet-list">
+              ${group.items.map((text) => `<li>${text}</li>`).join("")}
+            </ul>
+          </div>
         </article>
       `
       )
@@ -268,12 +306,14 @@
 
   function renderWahanaList() {
     els.wahanaList.innerHTML = DATA.wahanaList
-      .map(
-        (item) => `
-        <article class="card item-card">
+      .map((item) => {
+        const isClosed = item.badge === "Tutup";
+        const priceClass = isClosed ? "is-closed" : item.badge === "Tiket Taman" ? "is-ticket" : "is-paid";
+        return `
+        <article class="card item-card${isClosed ? " is-inactive" : ""}">
           <div class="item-card-body">
             <h3 class="item-card-title">${item.name}</h3>
-            <p class="item-card-meta">${item.price} · ${item.duration}</p>
+            <span class="price-pill ${priceClass}">${item.price} · ${item.duration}</span>
             <p class="item-card-desc">${item.note}</p>
           </div>
           <div class="item-card-action">
@@ -281,8 +321,8 @@
             <button type="button" class="btn btn-outline btn-xs" data-focus-dest="${item.destinationId}">Lihat di Peta</button>
           </div>
         </article>
-      `
-      )
+      `;
+      })
       .join("");
   }
 
@@ -327,8 +367,9 @@
                   const extraAttrs = hasCustomCoords
                     ? ` data-focus-lat="${t.lat}" data-focus-lng="${t.lng}" data-focus-name="${t.name.replace(/"/g, "&quot;")}" data-focus-desc="${t.detail.replace(/"/g, "&quot;")}"${t.accessOverride ? ` data-focus-access="${t.accessOverride}"` : ""}`
                     : "";
+                  const isInactive = t.accessOverride === "Tutup";
                   return `
-                    <div class="tenant-row">
+                    <div class="tenant-row${isInactive ? " is-inactive" : ""}">
                       <div class="item-card-body">
                         <h4 class="tenant-name">${t.name} <span class="tenant-type">· ${t.type}</span>${accessTag}</h4>
                         <p class="tenant-detail">${t.detail}</p>
@@ -368,19 +409,33 @@
   }
 
   function renderUpdates() {
+    const toneClassMap = {
+      important: "tone-important",
+      event: "tone-event",
+      positive: "tone-positive",
+      archive: "tone-archive"
+    };
+    const badgeClassMap = {
+      important: "badge-danger",
+      event: "badge-ticket",
+      positive: "badge-free",
+      archive: "badge-neutral"
+    };
+
     els.updatesList.innerHTML = DATA.updates
-      .map(
-        (upd) => `
-        <article class="card">
+      .map((upd) => {
+        const tone = upd.tone || "archive";
+        return `
+        <article class="card update-card ${toneClassMap[tone] || ""}">
           <div class="update-top">
-            <span class="badge badge-neutral">${upd.tag}</span>
+            <span class="badge ${badgeClassMap[tone] || "badge-neutral"}">${upd.tag}</span>
             <span class="update-date">${upd.date} · ${upd.source}</span>
           </div>
           <h3 class="item-card-title">${upd.title}</h3>
           <p class="item-card-desc">${upd.summary}</p>
         </article>
-      `
-      )
+      `;
+      })
       .join("");
   }
 
@@ -410,7 +465,7 @@
           <div class="modal-dest-row${isSelected ? " is-selected" : ""}">
             <button type="button" class="modal-dest-pick" data-pick-dest="${dest.id}">
               <span class="modal-dest-name">${dest.name}</span>
-              <span class="modal-dest-sub">${dest.zoneLabel} · ${dest.accessBadge}</span>
+              <span class="modal-dest-sub"><span class="badge ${getBadgeClass(dest.accessBadge)}">${dest.accessBadge}</span><span>${dest.zoneLabel}</span></span>
             </button>
             <a
               href="${directUrl}"
@@ -621,6 +676,38 @@
     });
   }
 
+  function initScrollSpy() {
+    const navLinks = Array.from(document.querySelectorAll(".quick-nav .nav-pill"));
+    if (!navLinks.length || typeof IntersectionObserver !== "function") return;
+
+    const setActive = (id) => {
+      navLinks.forEach((link) => {
+        const href = link.getAttribute("href");
+        link.classList.toggle("is-active", href === `#${id}`);
+      });
+    };
+
+    setActive("peta");
+
+    const sections = navLinks
+      .map((link) => document.querySelector(link.getAttribute("href")))
+      .filter(Boolean);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible.length > 0) {
+          setActive(visible[0].target.id);
+        }
+      },
+      { rootMargin: "-120px 0px -55% 0px", threshold: [0.1, 0.4] }
+    );
+
+    sections.forEach((sec) => observer.observe(sec));
+  }
+
   function init() {
     initFromUrl();
     populateOriginSelects();
@@ -633,6 +720,7 @@
     renderFacilities();
     renderUpdates();
     bindEvents();
+    initScrollSpy();
 
     // Setiap kali halaman di-scan / dibuka, munculkan modal pilihan "Mau ke mana?"
     openScanModal();
