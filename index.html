@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kiara Artha Park — Web Pocket Panduan Pengunjung</title>
+  <meta name="description" content="Web Pocket resmi panduan pengunjung Kiara Artha Park Bandung: Live Google Maps & petunjuk arah, tiket, jadwal air mancur, area gratis vs berbayar, wahana, kuliner per zona, fasilitas, dan info terbaru." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js" defer></script>
+</head>
+<body>
+  <!-- Sticky Top Bar -->
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <span class="brand-title">Kiara Artha Park</span>
+        <span class="brand-sub">Web Pocket · Bandung</span>
+      </div>
+      <div class="topbar-actions">
+        <button type="button" id="open-scan-modal-btn" class="btn btn-outline btn-sm">Mau ke mana?</button>
+        <button type="button" id="open-qr-modal-btn" class="btn btn-outline btn-sm" aria-label="Buka QR Web Pocket">QR</button>
+      </div>
+    </div>
+    <nav class="quick-nav" aria-label="Navigasi bagian">
+      <div class="container quick-nav-scroll">
+        <a href="#peta" class="nav-pill">Peta &amp; Arah</a>
+        <a href="#tiket-event" class="nav-pill">Tiket &amp; Air Mancur</a>
+        <a href="#area" class="nav-pill">Area Gratis/Berbayar</a>
+        <a href="#wahana" class="nav-pill">Wahana &amp; Sewa</a>
+        <a href="#kuliner" class="nav-pill">Food Court &amp; Resto</a>
+        <a href="#fasilitas" class="nav-pill">Fasilitas</a>
+        <a href="#info-terbaru" class="nav-pill">Info Terbaru</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container main-content">
+    <!-- Ringkasan Status Singkat -->
+    <section class="intro-bar" aria-label="Ringkasan status taman">
+      <div class="intro-status">
+        <span id="park-live-status" class="status-dot">Memuat status WIB...</span>
+        <span class="intro-hours">Buka 09.00 – 21.00 WIB</span>
+      </div>
+      <p class="intro-address">Jl. Banten, Kebonwaru, Batununggal, Kota Bandung · HTM Rp10.000 (Weekday) / Rp15.000 (Weekend)</p>
+    </section>
+
+    <!-- 1. LIVE PREVIEW GOOGLE MAPS & PETUNJUK ARAH -->
+    <section id="peta" class="section-block">
+      <div class="section-head">
+        <div>
+          <h1 class="section-title">Peta &amp; Arah Tujuan</h1>
+          <p class="section-desc">Pilih titik tujuan untuk melihat pratinjau Google Maps lalu buka rute langsung.</p>
+        </div>
+        <button type="button" id="change-dest-btn" class="btn btn-secondary btn-sm">Ganti Tujuan</button>
+      </div>
+
+      <div class="card map-card">
+        <div class="map-meta">
+          <div class="map-selected-info">
+            <div class="map-selected-top">
+              <span id="selected-dest-badge" class="badge badge-ticket">Tiket Taman</span>
+              <span id="selected-dest-zone" class="meta-muted">Tengah Taman · Area Dalam</span>
+            </div>
+            <h2 id="selected-dest-name" class="map-dest-title">Danau &amp; Air Mancur Menari (Dancing Fountain)</h2>
+            <p id="selected-dest-desc" class="map-dest-desc">Pusat atraksi air mancur menari dengan iringan musik dan sorotan lampu warna-warni di tengah danau buatan.</p>
+          </div>
+        </div>
+
+        <div class="map-controls">
+          <label class="origin-label" for="main-origin-select">
+            <span>Dari:</span>
+            <select id="main-origin-select" class="select-input"></select>
+          </label>
+          <div class="map-type-toggle" role="group" aria-label="Mode tampilan peta">
+            <button type="button" class="toggle-btn is-active" data-map-type="m">Peta</button>
+            <button type="button" class="toggle-btn" data-map-type="k">Satelit</button>
+          </div>
+        </div>
+
+        <div class="map-frame-wrap">
+          <iframe
+            id="gmaps-preview"
+            title="Live Preview Google Maps Kiara Artha Park"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen
+          ></iframe>
+        </div>
+
+        <div class="map-cta-row">
+          <a
+            id="gmaps-directions-link"
+            href="https://www.google.com/maps/dir/?api=1&destination=-6.9160,107.6421&travelmode=walking"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-primary btn-block"
+          >
+            Buka Petunjuk Arah di Google Maps ↗
+          </a>
+        </div>
+
+        <div class="quick-pins" id="quick-pins" aria-label="Pintasan tujuan peta"></div>
+      </div>
+    </section>
+
+    <!-- 2. TIKET & JADWAL AIR MANCUR MENARI -->
+    <section id="tiket-event" class="section-block">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Tiket Masuk &amp; Jadwal Air Mancur</h2>
+          <p class="section-desc">Tarif resmi gerbang taman, parkir non-tunai, dan jam pertunjukan Dancing Fountain.</p>
+        </div>
+      </div>
+
+      <div class="ticket-grid">
+        <div class="card stat-card">
+          <span class="stat-label">Weekday (Sen–Jum)</span>
+          <strong class="stat-value">Rp10.000</strong>
+          <span class="stat-note">Per orang · Anak &lt; 6 thn Gratis</span>
+        </div>
+        <div class="card stat-card">
+          <span class="stat-label">Weekend &amp; Libur</span>
+          <strong class="stat-value">Rp15.000</strong>
+          <span class="stat-note">Per orang · Anak &lt; 6 thn Gratis</span>
+        </div>
+        <div class="card stat-card">
+          <span class="stat-label">Parkir Kendaraan</span>
+          <strong class="stat-value">Rp2rb – Rp5rb</strong>
+          <span class="stat-note">Cashless (QRIS / E-Money)</span>
+        </div>
+      </div>
+
+      <div class="card schedule-card">
+        <div class="schedule-header">
+          <div>
+            <h3 class="card-subtitle">Jadwal Air Mancur Menari (Dancing Fountain)</h3>
+            <p id="next-fountain-info" class="next-session-note">Menghitung jadwal sesi berikutnya...</p>
+          </div>
+          <div class="tab-group" role="tablist" aria-label="Pilih hari jadwal air mancur">
+            <button type="button" class="tab-btn is-active" data-fountain-day="weekday" role="tab" aria-selected="true">Sen–Jum</button>
+            <button type="button" class="tab-btn" data-fountain-day="weekend" role="tab" aria-selected="false">Sab–Min / Libur</button>
+          </div>
+        </div>
+        <ul id="fountain-list" class="fountain-list"></ul>
+        <p id="fountain-disclaimer" class="muted-footnote"></p>
+      </div>
+    </section>
+
+    <!-- 3. AREA GRATIS VS AREA BERBAYAR -->
+    <section id="area" class="section-block">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Area Gratis vs Berbayar</h2>
+          <p class="section-desc">Pembagian zona akses tanpa tiket taman, zona tiket masuk taman, dan wahana bertarif terpisah.</p>
+        </div>
+      </div>
+      <div id="area-comparison-list" class="stack-list"></div>
+    </section>
+
+    <!-- 4. WAHANA & PENYEWAAN -->
+    <section id="wahana" class="section-block">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Wahana &amp; Penyewaan</h2>
+          <p class="section-desc">Tiket wahana bermain, lapangan olahraga, sewa sepeda, skuter listrik, hingga bus trem.</p>
+        </div>
+      </div>
+      <div class="notice-inline">
+        <strong>Info Pembaruan:</strong> Wahana <strong>Papa Dino</strong> sudah tidak beroperasi di Kiara Artha Park (pindah ke Puncak, Bogor sejak akhir Desember 2024).
+      </div>
+      <div id="wahana-list" class="stack-list"></div>
+    </section>
+
+    <!-- 5. FOOD COURT & RESTO SESUAI LOKASI -->
+    <section id="kuliner" class="section-block">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Food Court &amp; Resto per Lokasi</h2>
+          <p class="section-desc">Klasifikasi tempat makan, kafe, dan tenant UMKM berdasarkan zona di Kiara Artha Park.</p>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <input
+          type="search"
+          id="culinary-search"
+          class="text-input"
+          placeholder="Cari nama resto, kafe, atau menu (mis. ramen, kopi, pizza)..."
+          aria-label="Cari kuliner"
+        />
+        <div class="chip-scroll" id="culinary-zone-filters" role="tablist" aria-label="Filter zona lokasi kuliner">
+          <button type="button" class="chip-btn is-active" data-zone="all">Semua Lokasi</button>
+          <button type="button" class="chip-btn" data-zone="aiueo">AIUEO Space</button>
+          <button type="button" class="chip-btn" data-zone="kampung-korea">Kampung Korea</button>
+          <button type="button" class="chip-btn" data-zone="tepi-danau">Tepi Danau &amp; Dalam</button>
+          <button type="button" class="chip-btn" data-zone="boulevard">Boulevard Luar</button>
+        </div>
+      </div>
+
+      <div id="culinary-zones-container" class="stack-list"></div>
+    </section>
+
+    <!-- 6. FASILITAS KAWASAN -->
+    <section id="fasilitas" class="section-block">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Fasilitas Kawasan</h2>
+          <p class="section-desc">Fasilitas penunjang publik yang tersedia untuk kenyamanan pengunjung.</p>
+        </div>
+      </div>
+      <div id="facilities-list" class="simple-grid"></div>
+    </section>
+
+    <!-- 7. INFORMASI TERBARU WEB & SOSMED -->
+    <section id="info-terbaru" class="section-block">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Info Terbaru Web &amp; Sosmed</h2>
+          <p class="section-desc">Pembaruan event, festival, dan kanal resmi Kiara Artha Park.</p>
+        </div>
+      </div>
+
+      <div class="card official-links-card">
+        <div class="official-links-grid">
+          <a id="link-ig" href="https://www.instagram.com/kiaraarthapark/" target="_blank" rel="noopener noreferrer" class="official-link-item">
+            <span class="official-label">Instagram Resmi</span>
+            <strong>@kiaraarthapark ↗</strong>
+          </a>
+          <a id="link-tree" href="https://linktr.ee/kiaraarthapark" target="_blank" rel="noopener noreferrer" class="official-link-item">
+            <span class="official-label">Portal Link Resmi</span>
+            <strong>linktr.ee/kiaraarthapark ↗</strong>
+          </a>
+          <a id="link-wa" href="https://wa.me/6282215838889" target="_blank" rel="noopener noreferrer" class="official-link-item">
+            <span class="official-label">Informasi &amp; Layanan</span>
+            <strong>WA 0822-1583-8889 ↗</strong>
+          </a>
+        </div>
+      </div>
+
+      <div id="updates-list" class="stack-list"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p><strong>Web Pocket Kiara Artha Park</strong> · Jl. Banten, Kebonwaru, Kec. Batununggal, Kota Bandung 40272.</p>
+      <p class="footer-note">Tarif, jam operasional tenant, dan jadwal pertunjukan dapat berubah sewaktu-waktu mengikuti pengelola resmi di Instagram @kiaraarthapark.</p>
+    </div>
+  </footer>
+
+  <!-- MODAL 1: PILIH TUJUAN SAAT SCAN ("MAU KE MANA?") -->
+  <div id="scan-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="scan-modal-title" hidden>
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div>
+          <span class="modal-eyebrow">Web Pocket Scan Guide</span>
+          <h2 id="scan-modal-title" class="modal-title">Mau ke mana di Kiara Artha Park?</h2>
+        </div>
+        <button type="button" id="close-scan-modal-btn" class="icon-close-btn" aria-label="Tutup pilihan peta">✕</button>
+      </div>
+
+      <div class="modal-controls">
+        <label class="modal-field">
+          <span>Titik Awal Anda</span>
+          <select id="modal-origin-select" class="select-input"></select>
+        </label>
+        <input
+          type="search"
+          id="modal-dest-search"
+          class="text-input"
+          placeholder="Cari tujuan: Kampung Korea, Mang Engking, Parkir, Toilet..."
+          aria-label="Cari tujuan di peta"
+        />
+        <div id="modal-category-tabs" class="chip-scroll">
+          <button type="button" class="chip-btn is-active" data-cat="Semua">Semua</button>
+          <button type="button" class="chip-btn" data-cat="Taman & Ikon">Taman &amp; Ikon</button>
+          <button type="button" class="chip-btn" data-cat="Kuliner">Kuliner</button>
+          <button type="button" class="chip-btn" data-cat="Wahana & Olahraga">Wahana</button>
+          <button type="button" class="chip-btn" data-cat="Fasilitas & Gerbang">Fasilitas</button>
+        </div>
+      </div>
+
+      <div id="modal-dest-list" class="modal-dest-list"></div>
+
+      <div class="modal-footer">
+        <button type="button" id="skip-scan-modal-btn" class="btn btn-outline btn-block">Lihat Semua Informasi Taman</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: QR CODE WEB POCKET -->
+  <div id="qr-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="qr-modal-title" hidden>
+    <div class="modal-sheet modal-sheet-sm">
+      <div class="modal-header">
+        <div>
+          <span class="modal-eyebrow">Bagikan / Tempel QR</span>
+          <h2 id="qr-modal-title" class="modal-title">QR Scan Web Pocket</h2>
+        </div>
+        <button type="button" id="close-qr-modal-btn" class="icon-close-btn" aria-label="Tutup QR">✕</button>
+      </div>
+      <div class="qr-body">
+        <label class="modal-field">
+          <span>Setel Titik Scan QR (Opsional per Gerbang)</span>
+          <select id="qr-origin-select" class="select-input"></select>
+        </label>
+        <div id="qr-canvas-box" class="qr-canvas-box"></div>
+        <p id="qr-url-preview" class="qr-url-preview"></p>
+        <button type="button" id="copy-qr-url-btn" class="btn btn-secondary btn-block">Salin Tautan Web Pocket</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./data.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
