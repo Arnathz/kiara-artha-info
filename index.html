@@ -17,10 +17,10 @@
     <div class="container topbar-inner">
       <div class="brand">
         <span class="brand-title">Kiara Artha Park</span>
-        <span class="brand-sub">Web Pocket · Bandung</span>
+        <span class="brand-sub">Kota Bandung</span>
       </div>
       <div class="topbar-actions">
-        <button type="button" id="open-scan-modal-btn" class="btn btn-outline btn-sm">Mau ke mana?</button>
+        <button type="button" id="open-scan-modal-btn" class="btn btn-nav btn-sm">Mau ke mana?</button>
         <button type="button" id="open-qr-modal-btn" class="btn btn-outline btn-sm" aria-label="Buka QR Web Pocket">QR</button>
       </div>
     </div>
@@ -39,13 +39,21 @@
 
   <main class="container main-content">
     <!-- Ringkasan Status Singkat -->
-    <section class="intro-bar" aria-label="Ringkasan status taman">
+    <section id="intro-bar" class="intro-bar" aria-label="Ringkasan status taman">
       <div class="intro-status">
         <span id="park-live-status" class="status-dot">Memuat status WIB...</span>
         <span class="intro-hours">Buka 09.00 – 21.00 WIB</span>
       </div>
       <p class="intro-address">Jl. Banten, Kebonwaru, Batununggal, Kota Bandung · HTM Rp10.000 (Weekday) / Rp15.000 (Weekend)</p>
     </section>
+
+    <div class="color-legend" aria-label="Panduan arti warna">
+      <span class="legend-label">Arti warna:</span>
+      <span class="legend-item"><span class="legend-dot dot-green"></span>Gratis / Aksi Utama</span>
+      <span class="legend-item"><span class="legend-dot dot-blue"></span>Tiket Taman / Info</span>
+      <span class="legend-item"><span class="legend-dot dot-amber"></span>Berbayar / Perhatian</span>
+      <span class="legend-item"><span class="legend-dot dot-red"></span>Tutup</span>
+    </div>
 
     <!-- 1. LIVE PREVIEW GOOGLE MAPS & PETUNJUK ARAH -->
     <section id="peta" class="section-block">
@@ -58,7 +66,7 @@
       </div>
 
       <div class="card map-card">
-        <div class="map-meta">
+        <div id="map-meta-box" class="map-meta tone-ticket">
           <div class="map-selected-info">
             <div class="map-selected-top">
               <span id="selected-dest-badge" class="badge badge-ticket">Tiket Taman</span>
@@ -126,7 +134,7 @@
           <strong class="stat-value">Rp15.000</strong>
           <span class="stat-note">Per orang · Anak &lt; 6 thn Gratis</span>
         </div>
-        <div class="card stat-card">
+        <div class="card stat-card stat-attention">
           <span class="stat-label">Parkir Kendaraan</span>
           <strong class="stat-value">Rp2rb – Rp5rb</strong>
           <span class="stat-note">Cashless (QRIS / E-Money)</span>
@@ -233,7 +241,7 @@
             <span class="official-label">Portal Link Resmi</span>
             <strong>linktr.ee/kiaraarthapark ↗</strong>
           </a>
-          <a id="link-wa" href="https://wa.me/6282215838889" target="_blank" rel="noopener noreferrer" class="official-link-item">
+          <a id="link-wa" href="https://wa.me/6282215838889" target="_blank" rel="noopener noreferrer" class="official-link-item is-wa">
             <span class="official-label">Informasi &amp; Layanan</span>
             <strong>WA 0822-1583-8889 ↗</strong>
           </a>
